@@ -5,9 +5,16 @@ from pathlib import Path
 from urllib.parse import urlparse
 import sys
 
+from PIL import Image, UnidentifiedImageError
+
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_HOST = "www.exergism.org"
 EXPECTED_CANONICAL = f"https://{EXPECTED_HOST}/"
+BRAND_IMAGES = (
+    "assets/brand/commons-symbol.webp",
+    "assets/brand/commons-crest.webp",
+    "assets/brand/exergism-symbol.webp",
+)
 
 
 class RefParser(HTMLParser):
@@ -65,21 +72,44 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
 
 
 def validate_brand_assets() -> None:
-    required = {
-        "assets/brand/commons-symbol.webp",
-        "assets/brand/commons-crest.webp",
-        "assets/brand/exergism-symbol.webp",
-        "assets/brand.css",
-    }
+    required = {*BRAND_IMAGES, "assets/brand.css"}
     missing = [path for path in sorted(required) if not (ROOT / path).exists()]
     if missing:
         fail(f"missing required brand asset(s): {', '.join(missing)}")
+
+    for relative_path in BRAND_IMAGES:
+        path = ROOT / relative_path
+        try:
+            with Image.open(path) as image:
+                if image.format != "WEBP":
+                    fail(f"{relative_path}: expected WebP, got {image.format!r}")
+                image.load()
+                if image.width < 128 or image.height < 128:
+                    fail(f"{relative_path}: image dimensions are unexpectedly small: {image.size}")
+        except (UnidentifiedImageError, OSError) as exc:
+            fail(f"{relative_path}: image cannot be decoded: {exc}")
 
     index = (ROOT / "index.html").read_text(encoding="utf-8")
     forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
     for token in forbidden_placeholders:
         if token in index:
             fail(f"legacy placeholder brand mark remains in index.html: {token!r}")
+
+
+def validate_progressive_navigation() -> None:
+    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+    javascript = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+
+    for selector in (".js .nav-toggle", ".js .site-nav", ".js .site-nav.is-open"):
+        if selector not in css:
+            fail(f"mobile navigation must be progressively enhanced via {selector!r}")
+
+    marker = "document.documentElement.classList.add('js')"
+    handler = "toggle.addEventListener('click'"
+    if marker not in javascript:
+        fail("site.js must mark the page as enhanced before collapsed-nav CSS can apply")
+    if handler not in javascript or javascript.index(marker) < javascript.index(handler):
+        fail("the enhanced-nav marker must only be added after the navigation handler is installed")
 
 
 def main() -> None:
@@ -105,13 +135,7 @@ def main() -> None:
     if f"Sitemap: {EXPECTED_CANONICAL}sitemap.xml" not in robots:
         fail("robots.txt does not reference the canonical sitemap")
 
-    css = (ROOT / "assets/site.css").read_text(encoding="utf-8")
-    js = (ROOT / "assets/site.js").read_text(encoding="utf-8")
-    if ".site-nav { position: absolute" in css and ".js .site-nav { position: absolute" not in css:
-        fail("mobile navigation collapse is not scoped to JavaScript enhancement")
-    if "document.documentElement.classList.add('js')" not in js:
-        fail("site.js does not mark the document as progressively enhanced")
-
+    validate_progressive_navigation()
     print("site validation passed")
 
 
