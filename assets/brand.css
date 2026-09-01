@@ -40,7 +40,8 @@
 }
 
 .hero-crest {
-  width: min(100%, 510px);
+  /* Never upscale the maintained raster crest past its intrinsic width. */
+  width: min(100%, 256px);
   height: auto;
   display: block;
   filter: drop-shadow(0 24px 30px rgba(10,13,12,.12));
