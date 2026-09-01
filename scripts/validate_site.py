@@ -64,6 +64,22 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
             fail(f"{file.name}: local reference {ref!r} resolves to missing {local.relative_to(ROOT)}")
 
 
+def validate_progressive_navigation() -> None:
+    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
+    javascript = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+
+    for selector in (".js .nav-toggle", ".js .site-nav", ".js .site-nav.is-open"):
+        if selector not in css:
+            fail(f"mobile navigation must be progressively enhanced via {selector!r}")
+
+    marker = "document.documentElement.classList.add('js')"
+    handler = "toggle.addEventListener('click'"
+    if marker not in javascript:
+        fail("site.js must mark the page as enhanced before collapsed-nav CSS can apply")
+    if handler not in javascript or javascript.index(marker) < javascript.index(handler):
+        fail("the enhanced-nav marker must only be added after the navigation handler is installed")
+
+
 def main() -> None:
     cname = (ROOT / "CNAME").read_text(encoding="utf-8").strip()
     if cname != EXPECTED_HOST:
@@ -86,6 +102,7 @@ def main() -> None:
     if f"Sitemap: {EXPECTED_CANONICAL}sitemap.xml" not in robots:
         fail("robots.txt does not reference the canonical sitemap")
 
+    validate_progressive_navigation()
     print("site validation passed")
 
 
