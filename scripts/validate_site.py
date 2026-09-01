@@ -3,6 +3,7 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
+import re
 import sys
 
 from PIL import Image, UnidentifiedImageError
@@ -71,6 +72,12 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
             fail(f"{file.name}: local reference {ref!r} resolves to missing {local.relative_to(ROOT)}")
 
 
+def has_base_css_rule(css: str, selector: str) -> bool:
+    """Require the selector itself to introduce a rule, not just be a prefix elsewhere."""
+    pattern = rf"(?m)^[ \t]*{re.escape(selector)}[ \t]*\{{"
+    return re.search(pattern, css) is not None
+
+
 def validate_brand_assets() -> None:
     required = {*BRAND_IMAGES, "assets/brand.css"}
     missing = [path for path in sorted(required) if not (ROOT / path).exists()]
@@ -121,8 +128,8 @@ def validate_brand_assets() -> None:
             fail(f"missing required public-facing treatment in index.html: {token!r}")
 
     for selector in (".hero-field", ".framework-field", ".identifier-domain", ".identity-principle"):
-        if selector not in brand_css:
-            fail(f"brand.css is missing required design selector {selector!r}")
+        if not has_base_css_rule(brand_css, selector):
+            fail(f"brand.css is missing required base design rule {selector!r}")
 
 
 def validate_progressive_navigation() -> None:
