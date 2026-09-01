@@ -92,6 +92,7 @@ def validate_brand_assets() -> None:
             fail(f"{relative_path}: image cannot be decoded: {exc}")
 
     index = (ROOT / "index.html").read_text(encoding="utf-8")
+    brand_css = (ROOT / "assets/brand.css").read_text(encoding="utf-8")
     crest_dimensions = dimensions["assets/brand/commons-crest.webp"]
 
     if '<meta name="twitter:card" content="summary_large_image">' in index and crest_dimensions[0] < 300:
@@ -105,6 +106,13 @@ def validate_brand_assets() -> None:
         fail(
             "hero crest intrinsic width/height must match the decoded asset dimensions "
             f"{crest_dimensions}"
+        )
+
+    branded_description_selector = ".section-heading-branded > p:not(.eyebrow)"
+    if branded_description_selector not in brand_css:
+        fail(
+            "branded section descriptions must be positioned independently of :last-child "
+            f"via {branded_description_selector!r}"
         )
 
     forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
