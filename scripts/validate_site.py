@@ -3,11 +3,19 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
+import re
 import sys
+
+from PIL import Image, UnidentifiedImageError
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_HOST = "www.exergism.org"
 EXPECTED_CANONICAL = f"https://{EXPECTED_HOST}/"
+BRAND_IMAGES = (
+    "assets/brand/commons-symbol.webp",
+    "assets/brand/commons-crest.webp",
+    "assets/brand/exergism-symbol.webp",
+)
 
 
 class RefParser(HTMLParser):
@@ -64,6 +72,69 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
             fail(f"{file.name}: local reference {ref!r} resolves to missing {local.relative_to(ROOT)}")
 
 
+def validate_brand_assets() -> None:
+    required = {*BRAND_IMAGES, "assets/brand.css"}
+    missing = [path for path in sorted(required) if not (ROOT / path).exists()]
+    if missing:
+        fail(f"missing required brand asset(s): {', '.join(missing)}")
+
+    dimensions: dict[str, tuple[int, int]] = {}
+    for relative_path in BRAND_IMAGES:
+        path = ROOT / relative_path
+        try:
+            with Image.open(path) as image:
+                if image.format != "WEBP":
+                    fail(f"{relative_path}: expected WebP, got {image.format!r}")
+                image.load()
+                if image.width < 128 or image.height < 128:
+                    fail(f"{relative_path}: image dimensions are unexpectedly small: {image.size}")
+                dimensions[relative_path] = image.size
+        except (UnidentifiedImageError, OSError) as exc:
+            fail(f"{relative_path}: image cannot be decoded: {exc}")
+
+    index = (ROOT / "index.html").read_text(encoding="utf-8")
+    brand_css = (ROOT / "assets/brand.css").read_text(encoding="utf-8")
+    crest_dimensions = dimensions["assets/brand/commons-crest.webp"]
+
+    if '<meta name="twitter:card" content="summary_large_image">' in index and crest_dimensions[0] < 300:
+        fail(f"summary_large_image requires a social image at least 300px wide, got {crest_dimensions}")
+
+    expected_crest_markup = (
+        f'class="hero-crest" src="/assets/brand/commons-crest.webp" '
+        f'width="{crest_dimensions[0]}" height="{crest_dimensions[1]}"'
+    )
+    if expected_crest_markup not in index:
+        fail(
+            "hero crest intrinsic width/height must match the decoded asset dimensions "
+            f"{crest_dimensions}"
+        )
+
+    crest_rule = re.search(r"\.hero-crest\s*\{(?P<body>[^}]*)\}", brand_css, re.DOTALL)
+    if not crest_rule:
+        fail("brand.css is missing the .hero-crest rule")
+    max_width = re.search(r"width:\s*min\(100%,\s*(\d+)px\)\s*;", crest_rule.group("body"))
+    if not max_width:
+        fail(".hero-crest must explicitly cap its rendered width with min(100%, Npx)")
+    rendered_cap = int(max_width.group(1))
+    if rendered_cap > crest_dimensions[0]:
+        fail(
+            ".hero-crest must not upscale the raster crest beyond its intrinsic width: "
+            f"CSS cap {rendered_cap}px > asset width {crest_dimensions[0]}px"
+        )
+
+    branded_description_selector = ".section-heading-branded > p:not(.eyebrow)"
+    if branded_description_selector not in brand_css:
+        fail(
+            "branded section descriptions must be positioned independently of :last-child "
+            f"via {branded_description_selector!r}"
+        )
+
+    forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
+    for token in forbidden_placeholders:
+        if token in index:
+            fail(f"legacy placeholder brand mark remains in index.html: {token!r}")
+
+
 def validate_progressive_navigation() -> None:
     css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
     javascript = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
@@ -89,6 +160,7 @@ def main() -> None:
     if not index.exists():
         fail("index.html is missing")
     validate_html(index, require_canonical=True)
+    validate_brand_assets()
 
     error_page = ROOT / "404.html"
     if error_page.exists():
