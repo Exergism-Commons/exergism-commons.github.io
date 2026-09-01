@@ -77,6 +77,7 @@ def validate_brand_assets() -> None:
     if missing:
         fail(f"missing required brand asset(s): {', '.join(missing)}")
 
+    dimensions: dict[str, tuple[int, int]] = {}
     for relative_path in BRAND_IMAGES:
         path = ROOT / relative_path
         try:
@@ -86,10 +87,26 @@ def validate_brand_assets() -> None:
                 image.load()
                 if image.width < 128 or image.height < 128:
                     fail(f"{relative_path}: image dimensions are unexpectedly small: {image.size}")
+                dimensions[relative_path] = image.size
         except (UnidentifiedImageError, OSError) as exc:
             fail(f"{relative_path}: image cannot be decoded: {exc}")
 
     index = (ROOT / "index.html").read_text(encoding="utf-8")
+    crest_dimensions = dimensions["assets/brand/commons-crest.webp"]
+
+    if '<meta name="twitter:card" content="summary_large_image">' in index and crest_dimensions[0] < 300:
+        fail(f"summary_large_image requires a social image at least 300px wide, got {crest_dimensions}")
+
+    expected_crest_markup = (
+        f'class="hero-crest" src="/assets/brand/commons-crest.webp" '
+        f'width="{crest_dimensions[0]}" height="{crest_dimensions[1]}"'
+    )
+    if expected_crest_markup not in index:
+        fail(
+            "hero crest intrinsic width/height must match the decoded asset dimensions "
+            f"{crest_dimensions}"
+        )
+
     forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
     for token in forbidden_placeholders:
         if token in index:
