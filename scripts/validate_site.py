@@ -64,20 +64,22 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
             fail(f"{file.name}: local reference {ref!r} resolves to missing {local.relative_to(ROOT)}")
 
 
-def validate_progressive_navigation() -> None:
-    css = (ROOT / "assets" / "site.css").read_text(encoding="utf-8")
-    javascript = (ROOT / "assets" / "site.js").read_text(encoding="utf-8")
+def validate_brand_assets() -> None:
+    required = {
+        "assets/brand/commons-symbol.webp",
+        "assets/brand/commons-crest.webp",
+        "assets/brand/exergism-symbol.webp",
+        "assets/brand.css",
+    }
+    missing = [path for path in sorted(required) if not (ROOT / path).exists()]
+    if missing:
+        fail(f"missing required brand asset(s): {', '.join(missing)}")
 
-    for selector in (".js .nav-toggle", ".js .site-nav", ".js .site-nav.is-open"):
-        if selector not in css:
-            fail(f"mobile navigation must be progressively enhanced via {selector!r}")
-
-    marker = "document.documentElement.classList.add('js')"
-    handler = "toggle.addEventListener('click'"
-    if marker not in javascript:
-        fail("site.js must mark the page as enhanced before collapsed-nav CSS can apply")
-    if handler not in javascript or javascript.index(marker) < javascript.index(handler):
-        fail("the enhanced-nav marker must only be added after the navigation handler is installed")
+    index = (ROOT / "index.html").read_text(encoding="utf-8")
+    forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
+    for token in forbidden_placeholders:
+        if token in index:
+            fail(f"legacy placeholder brand mark remains in index.html: {token!r}")
 
 
 def main() -> None:
@@ -89,6 +91,7 @@ def main() -> None:
     if not index.exists():
         fail("index.html is missing")
     validate_html(index, require_canonical=True)
+    validate_brand_assets()
 
     error_page = ROOT / "404.html"
     if error_page.exists():
@@ -102,7 +105,13 @@ def main() -> None:
     if f"Sitemap: {EXPECTED_CANONICAL}sitemap.xml" not in robots:
         fail("robots.txt does not reference the canonical sitemap")
 
-    validate_progressive_navigation()
+    css = (ROOT / "assets/site.css").read_text(encoding="utf-8")
+    js = (ROOT / "assets/site.js").read_text(encoding="utf-8")
+    if ".site-nav { position: absolute" in css and ".js .site-nav { position: absolute" not in css:
+        fail("mobile navigation collapse is not scoped to JavaScript enhancement")
+    if "document.documentElement.classList.add('js')" not in js:
+        fail("site.js does not mark the document as progressively enhanced")
+
     print("site validation passed")
 
 

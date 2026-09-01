@@ -13,6 +13,14 @@ This repository serves `https://www.exergism.org/` through GitHub Pages. It is a
 
 The website must not become a second source of truth for Exergism, ECL, ECL-PL, or governance artifacts.
 
+## Brand assets
+
+The public site uses the maintained Exergism Commons and Exergism symbols under `assets/brand/` rather than generated placeholder marks. Their use here is presentational and does not alter project-specific authority, licensing, or semantic identity.
+
+- `commons-symbol.webp` — compact Exergism Commons mark for navigation and small surfaces.
+- `commons-crest.webp` — institutional Exergism Commons crest for prominent presentation and social previews.
+- `exergism-symbol.webp` — Exergism project symbol used to identify the canonical framework.
+
 ## Implementation
 
 The site is intentionally static and dependency-free:

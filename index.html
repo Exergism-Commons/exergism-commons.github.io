@@ -7,13 +7,18 @@
   <meta name="description" content="Exergism Commons develops the canonical Exergism corpus, experimental licensing infrastructure, persistent semantic identifiers, and contestable public governance.">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://www.exergism.org/">
+  <link rel="icon" href="/assets/brand/commons-symbol.webp" type="image/webp">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Exergism Commons">
   <meta property="og:description" content="A public commons for Exergism, experimental licensing, semantic infrastructure, and contestable governance.">
   <meta property="og:url" content="https://www.exergism.org/">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://www.exergism.org/assets/brand/commons-crest.webp">
+  <meta property="og:image:alt" content="Exergism Commons crest">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.exergism.org/assets/brand/commons-crest.webp">
   <title>Exergism Commons — Exergism, infrastructure and governance</title>
   <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="/assets/brand.css">
   <script src="/assets/site.js" defer></script>
 </head>
 <body>
@@ -22,7 +27,7 @@
   <header class="site-header" data-header>
     <div class="shell header-inner">
       <a class="brand" href="/" aria-label="Exergism Commons home">
-        <span class="brand-mark" aria-hidden="true">EC</span>
+        <img class="brand-logo" src="/assets/brand/commons-symbol.webp" width="36" height="36" alt="">
         <span>Exergism Commons</span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
@@ -50,19 +55,9 @@
           <a class="button button-secondary" href="https://github.com/Exergism-Commons">View the work on GitHub</a>
         </div>
       </div>
-      <div class="hero-model" aria-label="Exergism Commons architecture">
-        <div class="model-node model-core">
-          <span>Canonical source</span>
-          <strong>Exergism</strong>
-        </div>
-        <div class="model-line" aria-hidden="true"></div>
-        <div class="model-grid">
-          <div class="model-node"><span>Application</span><strong>ECL</strong></div>
-          <div class="model-node"><span>Infrastructure</span><strong>Semantic IDs</strong></div>
-          <div class="model-node"><span>Institution</span><strong>Governance</strong></div>
-          <div class="model-node"><span>Companion</span><strong>ECL-PL</strong></div>
-        </div>
-      </div>
+      <figure class="hero-emblem" aria-label="Exergism Commons institutional emblem">
+        <img class="hero-crest" src="/assets/brand/commons-crest.webp" width="546" height="600" alt="Exergism Commons crest">
+      </figure>
     </section>
 
     <section class="statement" aria-label="Core idea">
@@ -73,10 +68,11 @@
     </section>
 
     <section id="exergism" class="section shell">
-      <div class="section-heading">
+      <div class="section-heading section-heading-branded">
         <p class="eyebrow">01 · Canonical framework</p>
         <h2>Exergism</h2>
         <p>Emergentist Metaphysics of Liberation is a philosophical system centered on emergence, truth, consciousness, autonomy, exergy, capture, liberation, and the possibility of breaking recurrent cycles of domination.</p>
+        <img class="exergism-section-logo" src="/assets/brand/exergism-symbol.webp" width="92" height="92" alt="Exergism symbol" loading="lazy">
       </div>
 
       <div class="feature-grid">
@@ -118,6 +114,7 @@
         <div class="project-grid">
           <article class="project-card project-card-featured">
             <div class="project-meta"><span>Philosophy + formal model</span><span>v0.1.0</span></div>
+            <img class="project-symbol" src="/assets/brand/exergism-symbol.webp" width="190" height="190" alt="" loading="lazy">
             <h3>Exergism</h3>
             <p>The canonical philosophical corpus, formal exergic-analysis system, four-book architecture, examples, and generated semantic projection.</p>
             <a href="https://github.com/Exergism-Commons/exergism">Open repository <span aria-hidden="true">↗</span></a>
@@ -162,26 +159,11 @@
       </div>
 
       <ol class="principles-list">
-        <li>
-          <span>01</span>
-          <div><h3>Explicit</h3><p>Normative, legal, and technical effects should arise from identifiable artifacts and procedures, not implication.</p></div>
-        </li>
-        <li>
-          <span>02</span>
-          <div><h3>Versioned</h3><p>Released artifacts and decisions must be attributable to exact versions rather than silently rewritten by later state.</p></div>
-        </li>
-        <li>
-          <span>03</span>
-          <div><h3>Contestable</h3><p>Evidence, assumptions, classifications, and governance outcomes should remain open to challenge and adversarial review.</p></div>
-        </li>
-        <li>
-          <span>04</span>
-          <div><h3>Machine-auditable</h3><p>Where practical, invariants should be expressed in schemas, semantic models, validation rules, tests, and reproducible generation.</p></div>
-        </li>
-        <li>
-          <span>05</span>
-          <div><h3>Non-retroactive</h3><p>Living knowledge can improve without silently changing the legal or semantic meaning of immutable historical releases.</p></div>
-        </li>
+        <li><span>01</span><div><h3>Explicit</h3><p>Normative, legal, and technical effects should arise from identifiable artifacts and procedures, not implication.</p></div></li>
+        <li><span>02</span><div><h3>Versioned</h3><p>Released artifacts and decisions must be attributable to exact versions rather than silently rewritten by later state.</p></div></li>
+        <li><span>03</span><div><h3>Contestable</h3><p>Evidence, assumptions, classifications, and governance outcomes should remain open to challenge and adversarial review.</p></div></li>
+        <li><span>04</span><div><h3>Machine-auditable</h3><p>Where practical, invariants should be expressed in schemas, semantic models, validation rules, tests, and reproducible generation.</p></div></li>
+        <li><span>05</span><div><h3>Non-retroactive</h3><p>Living knowledge can improve without silently changing the legal or semantic meaning of immutable historical releases.</p></div></li>
       </ol>
     </section>
 
@@ -219,7 +201,7 @@
     <div class="shell footer-grid">
       <div>
         <a class="brand brand-footer" href="/">
-          <span class="brand-mark" aria-hidden="true">EC</span>
+          <img class="brand-logo" src="/assets/brand/commons-symbol.webp" width="36" height="36" alt="">
           <span>Exergism Commons</span>
         </a>
         <p>Public infrastructure for Exergism and its surrounding ecosystem.</p>
