@@ -72,6 +72,12 @@ def validate_html(file: Path, require_canonical: bool = False) -> None:
             fail(f"{file.name}: local reference {ref!r} resolves to missing {local.relative_to(ROOT)}")
 
 
+def has_base_css_rule(css: str, selector: str) -> bool:
+    """Require the selector itself to introduce a rule, not just be a prefix elsewhere."""
+    pattern = rf"(?m)^[ \t]*{re.escape(selector)}[ \t]*\{{"
+    return re.search(pattern, css) is not None
+
+
 def validate_brand_assets() -> None:
     required = {*BRAND_IMAGES, "assets/brand.css"}
     missing = [path for path in sorted(required) if not (ROOT / path).exists()]
@@ -99,40 +105,31 @@ def validate_brand_assets() -> None:
     if '<meta name="twitter:card" content="summary_large_image">' in index and crest_dimensions[0] < 300:
         fail(f"summary_large_image requires a social image at least 300px wide, got {crest_dimensions}")
 
-    expected_crest_markup = (
-        f'class="hero-crest" src="/assets/brand/commons-crest.webp" '
-        f'width="{crest_dimensions[0]}" height="{crest_dimensions[1]}"'
+    forbidden_page_treatments = (
+        'class="hero-crest"',
+        'class="exergism-section-logo"',
+        'class="brand-mark"',
+        '>EC</span>',
+        'Identity is not presentation.',
+        '<strong>www.exergism.org</strong>',
     )
-    if expected_crest_markup not in index:
-        fail(
-            "hero crest intrinsic width/height must match the decoded asset dimensions "
-            f"{crest_dimensions}"
-        )
-
-    crest_rule = re.search(r"\.hero-crest\s*\{(?P<body>[^}]*)\}", brand_css, re.DOTALL)
-    if not crest_rule:
-        fail("brand.css is missing the .hero-crest rule")
-    max_width = re.search(r"width:\s*min\(100%,\s*(\d+)px\)\s*;", crest_rule.group("body"))
-    if not max_width:
-        fail(".hero-crest must explicitly cap its rendered width with min(100%, Npx)")
-    rendered_cap = int(max_width.group(1))
-    if rendered_cap > crest_dimensions[0]:
-        fail(
-            ".hero-crest must not upscale the raster crest beyond its intrinsic width: "
-            f"CSS cap {rendered_cap}px > asset width {crest_dimensions[0]}px"
-        )
-
-    branded_description_selector = ".section-heading-branded > p:not(.eyebrow)"
-    if branded_description_selector not in brand_css:
-        fail(
-            "branded section descriptions must be positioned independently of :last-child "
-            f"via {branded_description_selector!r}"
-        )
-
-    forbidden_placeholders = ('class="brand-mark"', '>EC</span>')
-    for token in forbidden_placeholders:
+    for token in forbidden_page_treatments:
         if token in index:
-            fail(f"legacy placeholder brand mark remains in index.html: {token!r}")
+            fail(f"deprecated visual/copy treatment remains in index.html: {token!r}")
+
+    required_markup = (
+        'class="hero-field"',
+        'class="framework-field"',
+        'class="identifier-domain"',
+        'class="identity-principle"',
+    )
+    for token in required_markup:
+        if token not in index:
+            fail(f"missing required public-facing treatment in index.html: {token!r}")
+
+    for selector in (".hero-field", ".framework-field", ".identifier-domain", ".identity-principle"):
+        if not has_base_css_rule(brand_css, selector):
+            fail(f"brand.css is missing required base design rule {selector!r}")
 
 
 def validate_progressive_navigation() -> None:
