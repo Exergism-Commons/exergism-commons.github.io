@@ -50,6 +50,16 @@
   position: relative;
 }
 
+/* The branded heading has a logo after its description, so the description
+   must not depend on being :last-child to keep its desktop grid placement. */
+.section-heading-branded > p:not(.eyebrow) {
+  grid-column: 2;
+  margin: 0;
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
 .exergism-section-logo {
   grid-column: 1;
   width: 92px;
@@ -86,6 +96,7 @@
 
 @media (max-width: 960px) {
   .hero-emblem { max-width: 650px; min-height: 480px; }
+  .section-heading-branded > p:not(.eyebrow) { grid-column: 1; grid-row: auto; }
   .section-heading-branded .exergism-section-logo { grid-column: 1; grid-row: auto; margin: 12px 0 0; }
   .project-symbol { position: static; width: 100px; height: 100px; margin: 34px 0 26px; }
   .project-card-featured h3,
