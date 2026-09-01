@@ -110,9 +110,15 @@ def validate_brand_assets() -> None:
         if token in index:
             fail(f"deprecated visual/copy treatment remains in index.html: {token!r}")
 
-    for required_markup in ('class="hero-field"', 'class="framework-field"', 'id.exergism.org'):
-        if required_markup not in index:
-            fail(f"missing required public-facing treatment in index.html: {required_markup!r}")
+    required_markup = (
+        'class="hero-field"',
+        'class="framework-field"',
+        'class="identifier-domain"',
+        'class="identity-principle"',
+    )
+    for token in required_markup:
+        if token not in index:
+            fail(f"missing required public-facing treatment in index.html: {token!r}")
 
     for selector in (".hero-field", ".framework-field", ".identifier-domain", ".identity-principle"):
         if selector not in brand_css:
