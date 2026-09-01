@@ -1,1 +1,0 @@
-The favicon is derived mechanically from the Exergism Commons symbol. The symbol is preserved; only the square tile is masked with rounded corners for browser-tab presentation.
