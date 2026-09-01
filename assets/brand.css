@@ -12,10 +12,23 @@
   box-shadow: 0 0 0 1px rgba(255,255,255,.18);
 }
 
+/* Opening panel: single-column composition at every viewport width. */
+.hero {
+  min-height: auto;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(36px, 6vw, 64px);
+}
+
+.hero-copy {
+  max-width: 980px;
+}
+
 /* Abstract hero field: visual texture without repeating the Commons emblem. */
 .hero-field {
   position: relative;
-  min-height: 560px;
+  width: 100%;
+  min-height: 480px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 28px;
@@ -290,7 +303,7 @@
 }
 
 @media (max-width: 960px) {
-  .hero-field { max-width: 650px; min-height: 480px; }
+  .hero-field { max-width: none; min-height: 420px; }
   .framework-composition { grid-template-columns: 1fr; }
   .framework-field { min-height: 460px; }
   .framework-feature-grid .feature-card { min-height: 235px; }
@@ -302,7 +315,7 @@
 
 @media (max-width: 720px) {
   .brand-logo { width: 32px; height: 32px; }
-  .hero-field { min-height: 390px; }
+  .hero-field { min-height: 340px; }
   .hero-field-caption { right: 18px; bottom: 14px; }
   .hero-field-vector { height: 13px; }
   .hero-field-vector::after { width: 32px; height: 32px; border-top-width: 13px; border-right-width: 13px; }
