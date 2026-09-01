@@ -26,5 +26,9 @@
       toggle.setAttribute('aria-expanded', 'false');
       nav.classList.remove('is-open');
     });
+
+    // The collapsed mobile navigation is an enhancement, never the baseline.
+    // Add the marker only after the controls and their handlers are available.
+    document.documentElement.classList.add('js');
   }
 })();
