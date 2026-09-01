@@ -12,9 +12,22 @@
   box-shadow: 0 0 0 1px rgba(255,255,255,.18);
 }
 
+/* The opening panel is intentionally a single-column composition. */
+.hero {
+  min-height: auto;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(36px, 6vw, 64px);
+}
+
+.hero-copy {
+  max-width: 980px;
+}
+
 .hero-emblem {
   position: relative;
-  min-height: 560px;
+  width: 100%;
+  min-height: 420px;
   display: grid;
   place-items: center;
   margin: 0;
@@ -96,7 +109,7 @@
 }
 
 @media (max-width: 960px) {
-  .hero-emblem { max-width: 650px; min-height: 480px; }
+  .hero-emblem { max-width: none; min-height: 360px; }
   .section-heading-branded > p:not(.eyebrow) { grid-column: 1; grid-row: auto; }
   .section-heading-branded .exergism-section-logo { grid-column: 1; grid-row: auto; margin: 12px 0 0; }
   .project-symbol { position: static; width: 100px; height: 100px; margin: 34px 0 26px; }
@@ -107,7 +120,7 @@
 
 @media (max-width: 720px) {
   .brand-logo { width: 32px; height: 32px; }
-  .hero-emblem { min-height: 390px; padding: 24px; }
+  .hero-emblem { min-height: 320px; padding: 24px; }
   .hero-emblem::after { right: 18px; bottom: 14px; }
   .exergism-section-logo { width: 76px; height: 76px; }
 }
