@@ -2,16 +2,37 @@
 
 Public-facing website for **Exergism Commons**.
 
-This repository serves `https://www.exergism.org/` through GitHub Pages. It is a presentation layer only: canonical philosophical, legal, semantic, governance, and registry authority remains in the repositories that own those layers.
+This repository serves `https://www.exergism.org/` through GitHub Pages. It is a presentation layer only: canonical philosophical, legal, semantic, funding, governance, and registry authority remains in the repositories and adopted artifacts that own those layers.
 
 ## Web architecture
 
-- `www.exergism.org` — public/institutional website (this repository)
+- `www.exergism.org` — public/institutional website and ecosystem entry point (this repository)
 - `exergism.org` — intended apex redirect to `www.exergism.org`
-- `id.exergism.org` — persistent semantic identifier authority
-- project repositories — canonical source and version history
+- `governance.exergism.org` — human-facing guide to Exergism Commons governance; the governance repository and valid adoption records remain authoritative
+- `funding.exergism.org` — public funding intelligence, strategy, opportunities, and funding-governance presentation
+- `id.exergism.org` — persistent semantic identifier resolution and vocabulary/ontology access
+- project repositories — canonical source, version history, machine-readable records, and domain-specific authority
 
-The website must not become a second source of truth for Exergism, ECL, ECL-PL, or governance artifacts.
+The website must not become a second source of truth for Exergism, ECL, ECL-PL, Funding, Governance, or persistent identifiers.
+
+The intended separation is:
+
+```text
+www.exergism.org
+  public presentation / ecosystem navigation
+
+governance.exergism.org
+  how Exergism Commons is governed
+
+funding.exergism.org
+  how Exergism Commons builds and governs institutional funding capacity
+
+id.exergism.org
+  persistent identifiers and dereferenceable semantic resources
+
+GitHub repositories
+  canonical source, history, records, validators and domain authority
+```
 
 ## Brand assets
 
