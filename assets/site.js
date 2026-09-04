@@ -1,4 +1,10 @@
 (() => {
+  const wordmarkStylesheet = document.createElement('link');
+  wordmarkStylesheet.rel = 'stylesheet';
+  wordmarkStylesheet.href = '/assets/wordmark.css';
+  wordmarkStylesheet.dataset.commonsWordmark = '';
+  document.head.appendChild(wordmarkStylesheet);
+
   const header = document.querySelector('[data-header]');
   const toggle = document.querySelector('[data-nav-toggle]');
   const nav = document.querySelector('[data-nav]');
